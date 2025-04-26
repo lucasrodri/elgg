@@ -1,0 +1,1 @@
+0 * * * * www-data php /var/www/html/vendor/bin/elgg-cli cron -i hourly -q >> /var/log/cron.log 2>&1

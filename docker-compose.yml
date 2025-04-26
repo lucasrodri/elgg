@@ -1,0 +1,44 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: elgg-mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: elgg
+      MYSQL_USER: elgguser
+      MYSQL_PASSWORD: elggpassword
+      MYSQL_ROOT_PASSWORD: rootpassword
+    ports:
+      - "3306:3306"   # se quiser acessar pelo host
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d
+    networks:
+      - elgg-net
+
+  php-apache:
+    build: .
+    container_name: elgg-app
+    restart: always
+    ports:
+      - "8080:80"
+    volumes:
+      - ./elgg:/var/www/html
+      - ./uploads:/opt/data
+    depends_on:
+      - mysql
+    networks:
+      - elgg-net
+    environment:
+      - MYSQL_HOST=elgg-mysql
+      - MYSQL_DATABASE=elgg
+      - MYSQL_USER=elgguser
+      - MYSQL_PASSWORD=elggpassword
+
+volumes:
+  mysql-data:
+
+networks:
+  elgg-net:
+    driver: bridge
+
